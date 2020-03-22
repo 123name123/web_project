@@ -1,0 +1,58 @@
+.icon_prof{
+    width: 40px;
+    height: 40px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.basket{
+    width: 40px;
+    height: 40px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.not_found{
+    background: #000000 url(../../static/img/404.jpg);
+    background-position: center top;
+}
+
+.go_home{
+    position: absolute;
+    right: 42%;
+    bottom: 12%;
+    background: #ffffff;
+    width: 150px;
+    height: 50px;
+    text-align: center;
+    padding-top: 8px;
+    font-size: 30px;
+    border: 1px solid #000000;
+    border-radius: 15px;
+    text-decoration: none;
+    color: #000000;
+}
+
+.go_home:hover{
+    background-color: rgba(0, 0, 0, 0);
+    color: #ffffff;
+    border: none;
+}
+
+.search{
+    position: absolute;
+    width: 65%;
+    margin-left: 15%;
+    margin-top: 20px;
+    display: flex;
+}
+
+.main{
+    background: #dddddd;
+    position: absolute;
+    margin-top: 100px;
+    margin-left: 10%;
+    width: 80%;
+    height: 100%;
+    padding: 10px;
+}

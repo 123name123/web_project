@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="../../static/css/style.css">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <title> {{ title }} </title>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="/">CoolStore</a>
+        {% if current_user.is_authenticated %}
+        <div>
+            <a class="navbar-brand" href="/basket"><img src="../../static/img/basket.png"
+                                                        class="basket"></a>
+            <a class="navbar-brand" href="/profile"><img src="../../static/img/profile.jpg"
+                                                         class="icon_prof"></a>
+        </div>
+        {% else %}
+        <div>
+            <a class="btn btn-outline-secondary" href="/register" >Зарегистрироваться</a>
+            <a class="btn btn-outline-dark" href="/login">Войти</a>
+        </div>
+        {% endif %}
+    </nav>
+</header>
+{% block content %} {% endblock %}
+</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{%block content %}
+<main class="container" style="margin-top: 2%; background: #dddddd; padding: 10px;">
+    <div style="display: flex">
+        <img src="../../static/img/profile_img/{{ filename }}.jpg" style="width: 400px; height: 400px;">
+        <div style="margin: 10px; font-size: 26px;">
+            <div>Имя: {{ name }} </div>
+            <div>Фамилия: {{ sname }} </div>
+            <div>Отчество: {{ mname }} </div>
+            <div>Пол: {{ gender }} </div>
+            <div>Возраст: {{ age }} </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
