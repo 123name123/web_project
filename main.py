@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, jsonify, make_response, session
+from flask import Flask, render_template, redirect, request, jsonify, make_response, session, flash
 from data import db_session
 from data import users
 import os
@@ -11,12 +11,35 @@ from flask_ngrok import run_with_ngrok
 import datetime
 
 app = Flask(__name__)
+app.debug = True
 run_with_ngrok(app)
+
+UPLOAD_FOLDER = f'{os.getcwd()}\\static\\img\\profile_img'
+
 app.config['SECRET_KEY'] = '12345aA'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=1)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() == 'jpg'
+
+
+def get_profile_img():
+    os.chdir('static\\img\\profile_img')
+    if os.access(f'{current_user.id}.jpg', os.F_OK):
+        filename = str(current_user.id)
+    else:
+        if current_user.gender[0] == 'М':
+            filename = 'profilem'
+        else:
+            filename = 'profilef'
+    os.chdir('..\\..\\..')
+    return filename
 
 
 @app.errorhandler(404)
@@ -40,14 +63,20 @@ class LoginForm(FlaskForm):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    if current_user.is_authenticated:
+        filename = get_profile_img()
+    else:
+        filename = 'profilem'
     if request.method == 'POST':
         session['tag'] = request.form['search']
         return redirect('/')
-    return render_template('index.html', title="CoolStore", tag=session.get('tag', ''))
+    return render_template('index.html', title="CoolStore", tag=session.get('tag', ''),
+                           filename=filename)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    session['tag'] = ''
     form = LoginForm()
     if form.validate_on_submit():
         db_session.global_init('db/blogs.sqlite')
@@ -59,12 +88,13 @@ def login():
         return render_template('login_form.html',
                                message="Неправильный логин или пароль",
                                form=form)
-    return render_template('login_form.html', title='Авторизация', form=form)
+    return render_template('login_form.html', title='Авторизация', form=form, filename="profilem")
 
 
 @app.route('/logout')
 @login_required
 def logout():
+    session['tag'] = ''
     logout_user()
     return redirect("/")
 
@@ -111,35 +141,36 @@ def reqister():
         session_in_db.add(user)
         session_in_db.commit()
         return redirect('/login')
-    return render_template('reg.html', title='Регистрация', form=form)
+    return render_template('reg.html', title='Регистрация', form=form, filename="profilem")
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    db_session.global_init('db/blogs.sqlite')
-    session_in_db = db_session.create_session()
-    user = session_in_db.query(users.User).get(current_user.id)
-    os.chdir('static\\img\\profile_img')
-    if os.access(f'{user.id}.jpg', os.F_OK):
-        filename = f'{user.id}.jpg'
-    else:
-        if user.gender[0] == 'М':
-            filename = 'profilem'
-        else:
-            filename = 'profilef'
-    os.chdir('..\\..\\..')
-    params = {
-        'title': 'Профиль',
-        'filename': filename,
-        'id': user.id,
-        'name': user.name,
-        'sname': user.surname,
-        'mname': user.midname,
-        'gender': user.gender,
-        'age': user.age
-    }
-    return render_template('profile.html', **params)
+    if request.method == 'GET':
+        filename = get_profile_img()
+        params = {
+            'title': 'Профиль',
+            'filename': filename,
+            'id': current_user.id,
+            'name': current_user.name,
+            'sname': current_user.surname,
+            'mname': current_user.midname,
+            'gender': current_user.gender,
+            'age': current_user.age
+        }
+        return render_template('profile.html', **params)
+    elif request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], f'{current_user.id}.jpg'))
+            return redirect('/profile')
 
 
 def main():

@@ -11,14 +11,14 @@
     <title> {{ title }} </title>
 </head>
 <body>
-<header>
+<header class="header">
     <nav class="navbar navbar-light bg-light">
         <a class="navbar-brand" href="/">CoolStore</a>
         {% if current_user.is_authenticated %}
         <div>
             <a class="navbar-brand" href="/basket"><img src="../../static/img/basket.png"
                                                         class="basket"></a>
-            <a class="navbar-brand" href="/profile"><img src="../../static/img/profile.jpg"
+            <a class="navbar-brand" href="/profile"><img src="../../static/img/profile_img/{{ filename }}.jpg"
                                                          class="icon_prof"></a>
         </div>
         {% else %}

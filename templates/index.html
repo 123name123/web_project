@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {%block content %}
-<h1 align="center">CoolStore</h1>
+<h1 align="center" style="margin-top: 70px;">CoolStore</h1>
 <form class="search" method="post">
     <input class="form-control mr-sm-2" type="text" placeholder="Что вы хотите найти?" aria-label="Search"
            name="search" value="{{ tag }}">
@@ -9,9 +9,9 @@
 </form>
 <div class="main">
     {% if tag != '' %}
-    <h6>По запросу "{{ tag }}" найдено:</h6>
+    <h5>По запросу "{{ tag }}" найдено:</h5>
     {% else %}
-    <h6>Возможно вам интересно:</h6>
+    <h5>Возможно вам интересно:</h5>
     {% endif %}
 </div>
 {% endblock %}
