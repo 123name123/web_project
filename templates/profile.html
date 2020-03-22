@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {%block content %}
-<main class="main">
+<main class="main"  style="margin-top: 20px;">
     <div style="display: flex">
         <div>
             <img src="../../static/img/profile_img/{{ filename }}.jpg"
@@ -23,7 +23,10 @@
             <div>Отчество: {{ mname }}</div>
             <div>Пол: {{ gender }}</div>
             <div>Возраст: {{ age }}</div>
-            <a style="margin: 20px;" class="btn btn-outline-secondary" href="/logout" >Выйти</a>
+            <div style="display: flex; margin-top: 10px;">
+                <a class="btn btn-outline-secondary" href="/redact_profile" >Редактировать профиль</a>
+                <a style="margin-left: 5px;" class="btn btn-outline-secondary" href="/logout" >Выйти</a>
+            </div>
         </div>
     </div>
 </main>

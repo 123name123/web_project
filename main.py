@@ -108,7 +108,7 @@ class RegisterForm(FlaskForm):
     mname = StringField('Отчество(при наличии)', validators=[DataRequired()])
     gender = SelectField("Пол", validators=[DataRequired()], choices=[('1', 'М'), ('2', "Ж")])
     age = StringField('Возраст', validators=[DataRequired()])
-    submit = SubmitField('Войти')
+    submit = SubmitField('Подтвердить')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -171,6 +171,47 @@ def profile():
         if file and allowed_file(file.filename):
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], f'{current_user.id}.jpg'))
             return redirect('/profile')
+
+
+@app.route('/basket', methods=['GET', 'POST'])
+@login_required
+def basket():
+    filename = get_profile_img()
+    return render_template('basket.html', title='Корзина', filename=filename)
+
+
+@app.route('/redact_profile', methods=['GET', 'POST'])
+@login_required
+def redact_profile():
+    db_session.global_init('db/blogs.sqlite')
+    session_in_db = db_session.create_session()
+    user = session_in_db.query(users.User).get(current_user.id)
+    form = RegisterForm()
+    if request.method == 'GET':
+        if user.gender == 'Мужской':
+            gen = '1'
+        else:
+            gen = '2'
+        form.gender.data = gen
+        form.name.data = user.name
+        form.mname.data = user.midname
+        form.age.data = user.age
+        form.surname.data = user.surname
+    elif request.method == 'POST':
+        if form.gender.data == '1':
+            gen = "Мужской"
+        else:
+            gen = "Женский"
+        user.gender = gen
+        user.name = form.name.data
+        user.midname = form.mname.data
+        user.age = form.age.data
+        user.surname = form.surname.data
+        session_in_db.commit()
+        return redirect('/profile')
+    filename = get_profile_img()
+    return render_template('redact_profile.html', form=form, filename=filename,
+                           title='Редактирование')
 
 
 def main():

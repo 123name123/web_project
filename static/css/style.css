@@ -1,19 +1,10 @@
-.icon_prof{
+.icon{
     width: 40px;
     height: 40px;
     margin: 0px;
     padding: 0px;
     border: 1px solid #fdfdfd;
-    border-radius: 15px;
-}
-
-.basket{
-    width: 40px;
-    height: 40px;
-    margin: 0px;
-    padding: 0px;
-    border: 1px solid #fdfdfd;
-    border-radius: 15px;
+    border-radius: 25px;
 }
 
 .not_found{
@@ -52,9 +43,9 @@
 }
 
 .main{
-    border: 1px solid #dddddd;
+    border: 1px solid #fdfdfd;
     border-radius: 15px;
-    background: #dddddd;
+    background: #f5f5f5;
     position: absolute;
     margin-top: 100px;
     margin-left: 10%;

@@ -17,9 +17,9 @@
         {% if current_user.is_authenticated %}
         <div>
             <a class="navbar-brand" href="/basket"><img src="../../static/img/basket.png"
-                                                        class="basket"></a>
+                                                        class="icon"></a>
             <a class="navbar-brand" href="/profile"><img src="../../static/img/profile_img/{{ filename }}.jpg"
-                                                         class="icon_prof"></a>
+                                                         class="icon"></a>
         </div>
         {% else %}
         <div>
@@ -29,6 +29,7 @@
         {% endif %}
     </nav>
 </header>
+<h1 align="center" style="margin-top: 70px;">{{ title }}</h1>
 {% block content %} {% endblock %}
 </body>
 </html>
