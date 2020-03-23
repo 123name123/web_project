@@ -1,18 +1,18 @@
 from flask import Flask, render_template, redirect, request, jsonify, make_response, session, flash
 from data import db_session
-from data import users
+from data import users, products
 import os
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_ngrok import run_with_ngrok
+#from flask_ngrok import run_with_ngrok
 import datetime
 
 app = Flask(__name__)
 app.debug = True
-run_with_ngrok(app)
+#run_with_ngrok(app)
 
 UPLOAD_FOLDER = f'{os.getcwd()}\\static\\img\\profile_img'
 
@@ -40,6 +40,13 @@ def get_profile_img():
             filename = 'profilef'
     os.chdir('..\\..\\..')
     return filename
+
+
+def find_products(tag):
+    sessions = db_session.create_session()
+    product = sessions.query(products.Products).filter(
+        products.Products.title.like(f'%{tag}%')).all()
+    return product
 
 
 @app.errorhandler(404)
@@ -70,8 +77,9 @@ def index():
     if request.method == 'POST':
         session['tag'] = request.form['search']
         return redirect('/')
+    product = find_products(session.get('tag', ''))
     return render_template('index.html', title="CoolStore", tag=session.get('tag', ''),
-                           filename=filename)
+                           filename=filename, product=product)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -214,7 +222,38 @@ def redact_profile():
                            title='Редактирование')
 
 
+class Buy(FlaskForm):
+    count = IntegerField('Колличество:', validators=[DataRequired()])
+    submit = SubmitField('В корзину')
+
+
+@app.route('/product/<int:product_id>', methods=['GET', 'POST'])
+def product(product_id):
+    form = Buy()
+    if current_user.is_authenticated:
+        filename = get_profile_img()
+    else:
+        filename = 'profilem'
+    sessions = db_session.create_session()
+    prod = sessions.query(products.Products).get(product_id)
+    if form.validate_on_submit():
+        if current_user.is_authenticated:
+            sessions = db_session.create_session()
+            user = sessions.query(users.User).get(current_user.id)
+            if user.basket:
+                user.basket = user.basket + f'{product_id}({form.count.data}) '
+            else:
+                user.basket = f'{product_id}({form.count.data}) '
+            sessions.commit()
+        else:
+            return render_template('product.html', prod=prod, filename=filename, title=prod.title,
+                           form=form, message='Вы не авторизованы')
+    return render_template('product.html', prod=prod, filename=filename, title=prod.title,
+                           form=form)
+
+
 def main():
+    db_session.global_init("db/blogs.sqlite")
     app.run()
 
 
