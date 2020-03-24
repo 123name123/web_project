@@ -29,7 +29,9 @@
                     <td width="200"><h4 align="center">{{ item[1] }}</h4></td>
                     <td width="200"><h4 align="center">{{ item[0].price * item[1] }}</h4></td>
                     <td>
-                        <a href="/delete/{{ item[0].id }}" class="btn btn-danger">Удалить</a>
+                        <a href="/delete/{{ item[0].id }}" class="btn btn-dark">Удалить</a>
+                        <a href="/redact_prod_plus/{{ item[0].id }}" class="btn btn-success">+</a>
+                        <a href="/redact_prod_minus/{{ item[0].id }}" class="btn btn-danger">-</a>
                     </td>
 
                 </tr>

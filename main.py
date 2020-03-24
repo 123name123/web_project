@@ -7,12 +7,16 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Selec
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-#from flask_ngrok import run_with_ngrok
+# from flask_ngrok import run_with_ngrok
 import datetime
+from flask_restful import Api
+import product_resource
+
 
 app = Flask(__name__)
+api = Api(app)
 app.debug = True
-#run_with_ngrok(app)
+# run_with_ngrok(app)
 
 UPLOAD_FOLDER = f'{os.getcwd()}\\static\\img\\profile_img'
 
@@ -286,8 +290,43 @@ def product(product_id):
                            form=form)
 
 
+@app.route('/redact_prod_plus/<int:product_id>', methods=['GET', 'POST'])
+def redact_prod_plus(product_id):
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).get(current_user.id)
+    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
+            user.basket.strip().split()]
+    for item in bask:
+        if item[0] == product_id:
+            item[1] += 1
+    bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+    bask += ' '
+    user.basket = bask
+    sessions.commit()
+    return redirect('/basket')
+
+
+@app.route('/redact_prod_minus/<int:product_id>', methods=['GET', 'POST'])
+def redact_prod_minus(product_id):
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).get(current_user.id)
+    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
+            user.basket.strip().split()]
+    for item in bask:
+        if item[0] == product_id:
+            item[1] -= 1
+    bask = list(filter(lambda x: x[1] > 0, bask))
+    bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+    bask += ' '
+    user.basket = bask
+    sessions.commit()
+    return redirect('/basket')
+
+
 def main():
     db_session.global_init("db/blogs.sqlite")
+    api.add_resource(product_resource.ProductListResource, '/api/v2/products')
+    api.add_resource(product_resource.ProductResource, '/api/v2/products/<int:product_id>')
     app.run()
 
 
