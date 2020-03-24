@@ -184,8 +184,25 @@ def profile():
 @app.route('/basket', methods=['GET', 'POST'])
 @login_required
 def basket():
+    sessions = db_session.create_session()
     filename = get_profile_img()
-    return render_template('basket.html', title='Корзина', filename=filename)
+    user = load_user(current_user.id)
+    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in user.basket.strip().split()]
+    bask = list(map(lambda x: [sessions.query(products.Products).get(x[0]), x[1]], bask))
+    return render_template('basket.html', title='Корзина', filename=filename, bask=bask)
+
+
+@app.route('/delete/<int:product_id>', methods=['GET', 'POST'])
+def delete(product_id):
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).get(current_user.id)
+    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in user.basket.strip().split()]
+    bask = list(filter(lambda x: x[0] != product_id, bask))
+    bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+    bask += ' '
+    user.basket = bask
+    sessions.commit()
+    return redirect('/basket')
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])
@@ -238,16 +255,33 @@ def product(product_id):
     prod = sessions.query(products.Products).get(product_id)
     if form.validate_on_submit():
         if current_user.is_authenticated:
-            sessions = db_session.create_session()
-            user = sessions.query(users.User).get(current_user.id)
-            if user.basket:
-                user.basket = user.basket + f'{product_id}({form.count.data}) '
+            if sessions.query(products.Products).get(product_id).existence:
+                sessions = db_session.create_session()
+                user = sessions.query(users.User).get(current_user.id)
+                if user.basket:
+                    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
+                            user.basket.strip().split()]
+                    change = False
+                    for item in bask:
+                        if item[0] == product_id:
+                            item[1] += form.count.data
+                            change = True
+                    if not change:
+                        user.basket = user.basket + f'{product_id}-{form.count.data} '
+                    else:
+                        bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+                        bask += ' '
+                        user.basket = bask
+                else:
+                    user.basket = f'{product_id}-{form.count.data} '
+                sessions.commit()
             else:
-                user.basket = f'{product_id}({form.count.data}) '
-            sessions.commit()
+                return render_template('product.html', prod=prod, filename=filename,
+                                       title=prod.title,
+                                       form=form, message='Товара нет в наличии!')
         else:
             return render_template('product.html', prod=prod, filename=filename, title=prod.title,
-                           form=form, message='Вы не авторизованы')
+                                   form=form, message='Вы не авторизованы')
     return render_template('product.html', prod=prod, filename=filename, title=prod.title,
                            form=form)
 

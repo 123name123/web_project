@@ -2,6 +2,38 @@
 
 {%block content %}
 <main class="main" style="margin-top: 20px;">
+    <table align="center">
+            <tr>
+                <th width="200" class="alert alert-secondary"
+                        role="alert"><h4 align="center">Модель</h4></th>
+                <th width="400" class="alert alert-secondary"
+                    role="alert"><h4 align="center">Наименование</h4></th>
+                <th width="200" class="alert alert-secondary"
+                    role="alert"><h4 align="center">Наличие</h4></th>
+                <th width="200" class="alert alert-secondary"
+                    role="alert"><h4 align="center">Колличество</h4></th>
+                <th width="200" class="alert alert-secondary"
+                    role="alert"><h4 align="center">Стоимость</h4></th>
+            </tr>
+            {% for item in bask %}
+                <tr>
+                    <td width="200"><img src="/static/img/product_icons/{{ item[0].id }}.jpg" width="100"
+                            height="100" align="center"></td>
+                    <td width="400"><h4 align="center"><a href="/product/{{ item[0].id }}">
+                        {{ item[0].title }}</a></h4></td>
+                    {% if item[0].existence == 1 %}
+                        <td width="200"><h4 align="center">В наличии!</h4></td>
+                    {% else %}
+                        <td width="200"><h4 align="center">Нет в наличии!</h4></td>
+                    {% endif %}
+                    <td width="200"><h4 align="center">{{ item[1] }}</h4></td>
+                    <td width="200"><h4 align="center">{{ item[0].price * item[1] }}</h4></td>
+                    <td>
+                        <a href="/delete/{{ item[0].id }}" class="btn btn-danger">Удалить</a>
+                    </td>
 
+                </tr>
+            {% endfor %}
+        </table>
 </main>
 {% endblock %}
