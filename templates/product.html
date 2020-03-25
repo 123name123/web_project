@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="product" style="margin: 50px 0 0 50px">
+    <img src="/static/img/product_icons/{{ prod.id }}.jpg" width="700" height="700" align="left" style="padding: 0 50px 0 0">
+    <h4>{{ prod.about }}</h4>
+     <form action="" method="post">
+        {{ form.hidden_tag() }}
+        {{ form.csrf_token }}
+        <p>
+         <div style="font-size: 18px">{{ form.count.label }}</div>
+            {{ form.count(type="number", style='width: 110px', class="form-control", id="validationDefault01") }}<br>
+            {% for error in form.count.errors %}
+        <p class="alert alert-danger" role="alert">
+            {{ error }}
+        </p>
+        {% endfor %}
+        </p>
+        <p>{{ form.submit(type="submit", class="btn btn-outline-dark", style='width: 110px') }}</p>
+        {{message}}
+    </form>
+</div>
+{% endblock %}

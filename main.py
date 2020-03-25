@@ -1,18 +1,21 @@
-from flask import Flask, render_template, redirect, request, jsonify, make_response, session, flash
+from flask import Flask, render_template, redirect, request, session, flash
 from data import db_session
-from data import users
+from data import users, products
 import os
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_ngrok import run_with_ngrok
+# from flask_ngrok import run_with_ngrok
 import datetime
+from flask_restful import Api
+import product_resource
 
 app = Flask(__name__)
+api = Api(app)
 app.debug = True
-run_with_ngrok(app)
+# run_with_ngrok(app)
 
 UPLOAD_FOLDER = f'{os.getcwd()}\\static\\img\\profile_img'
 
@@ -40,6 +43,17 @@ def get_profile_img():
             filename = 'profilef'
     os.chdir('..\\..\\..')
     return filename
+
+
+def find_products(tag):
+    sessions = db_session.create_session()
+    all_products = sessions.query(products.Products).all()
+    ans_products = list()
+    for item in all_products:
+        title = item.title.lower()
+        if tag in title or title in tag or tag[:-1] in title or tag[:-2] in title:
+            ans_products.append(item)
+    return ans_products
 
 
 @app.errorhandler(404)
@@ -70,8 +84,24 @@ def index():
     if request.method == 'POST':
         session['tag'] = request.form['search']
         return redirect('/')
+    all_product = find_products(session.get('tag', '').lower())
+    if session.get('reverse', False):
+        sim = '▲'
+    else:
+        sim = '▼'
+    simp = simc = simn = ''
+    pos = session.get('sort', 'none')
+    if pos == 'price':
+        all_product.sort(key=lambda x: x.price, reverse=session.get('reverse', False))
+        simp = sim
+    elif pos == 'count':
+        all_product.sort(key=lambda x: x.existence, reverse=session.get('reverse', False))
+        simc = sim
+    elif pos == 'name':
+        simn = sim
+        all_product.sort(key=lambda x: x.title, reverse=session.get('reverse', False))
     return render_template('index.html', title="CoolStore", tag=session.get('tag', ''),
-                           filename=filename)
+                           filename=filename, product=all_product, simc=simc, simn=simn, simp=simp)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -111,20 +141,72 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Подтвердить')
 
 
+class LengthError(Exception):
+    error = 'Пароль должен состоять не менее чем из 8 символов!'
+
+
+class SymbolError(Exception):
+    error = 'В пароле должна быть хотя бы один символ!'
+
+
+class LetterError(Exception):
+    error = 'В пароле должна быть хотя бы одна большая и маленькая буква!'
+
+
+class DigitError(Exception):
+    error = 'В пароле должна быть хотя бы одна цифра!'
+
+
+def bool_ys(password):
+    ys = [0, 0, 0, 0]
+    for i in password:
+        if i.isdigit():
+            ys[0] = 1
+        elif i.isalpha():
+            if i.isupper():
+                ys[1] = 1
+            else:
+                ys[2] = 1
+        else:
+            ys[3] = 1
+    if ys[2] * ys[1] == 0:
+        raise LetterError
+    if ys[0] == 0:
+        raise DigitError
+    if ys[3] == 0:
+        raise SymbolError
+    return 'ok'
+
+
+def check_password(password):
+    try:
+        if len(password) <= 8:
+            raise LengthError
+        bool_ys(password)
+        return 'OK'
+    except Exception as ex:
+        return ex.error
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
+        result = check_password(form.password.data)
+        if result != 'OK':
+            return render_template('reg.html', title='Регистрация',
+                                   form=form, email_error="OK", again_password_error="OK",
+                                   password_error=result)
         if form.password.data != form.password_again.data:
             return render_template('reg.html', title='Регистрация',
-                                   form=form,
-                                   message="Пароли не совпадают")
+                                   form=form, email_error="OK", password_error="OK",
+                                   again_password_error="Пароли не совпадают")
         db_session.global_init('db/blogs.sqlite')
         session_in_db = db_session.create_session()
         if session_in_db.query(users.User).filter(users.User.email == form.email.data).first():
             return render_template('reg.html', title='Регистрация',
-                                   form=form,
-                                   message="Такой пользователь уже есть")
+                                   form=form, password_error="OK", again_password_error="OK",
+                                   email_error="Такой пользователь уже есть")
         if form.gender.data == '1':
             gen = "Мужской"
         else:
@@ -141,7 +223,8 @@ def reqister():
         session_in_db.add(user)
         session_in_db.commit()
         return redirect('/login')
-    return render_template('reg.html', title='Регистрация', form=form, filename="profilem")
+    return render_template('reg.html', title='Регистрация', form=form, filename="profilem",
+                           email_error="OK", password_error="OK", again_password_error="OK")
 
 
 @app.route('/profile', methods=['GET', 'POST'])
@@ -176,8 +259,25 @@ def profile():
 @app.route('/basket', methods=['GET', 'POST'])
 @login_required
 def basket():
+    sessions = db_session.create_session()
     filename = get_profile_img()
-    return render_template('basket.html', title='Корзина', filename=filename)
+    user = load_user(current_user.id)
+    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in user.basket.strip().split()]
+    bask = list(map(lambda x: [sessions.query(products.Products).get(x[0]), x[1]], bask))
+    return render_template('basket.html', title='Корзина', filename=filename, bask=bask)
+
+
+@app.route('/delete/<int:product_id>', methods=['GET', 'POST'])
+def delete(product_id):
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).get(current_user.id)
+    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in user.basket.strip().split()]
+    bask = list(filter(lambda x: x[0] != product_id, bask))
+    bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+    bask += ' '
+    user.basket = bask
+    sessions.commit()
+    return redirect('/basket')
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])
@@ -214,7 +314,144 @@ def redact_profile():
                            title='Редактирование')
 
 
+class Buy(FlaskForm):
+    count = IntegerField('Колличество:', validators=[DataRequired()])
+    submit = SubmitField('В корзину')
+
+
+@app.route('/product/<int:product_id>', methods=['GET', 'POST'])
+def product(product_id):
+    form = Buy()
+    if current_user.is_authenticated:
+        filename = get_profile_img()
+    else:
+        filename = 'profilem'
+    sessions = db_session.create_session()
+    prod = sessions.query(products.Products).get(product_id)
+    if form.validate_on_submit():
+        if current_user.is_authenticated:
+            if sessions.query(products.Products).get(product_id).existence:
+                sessions = db_session.create_session()
+                user = sessions.query(users.User).get(current_user.id)
+                if user.basket:
+                    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
+                            user.basket.strip().split()]
+                    change = False
+                    for item in bask:
+                        if item[0] == product_id:
+                            item[1] += form.count.data
+                            change = True
+                    if not change:
+                        user.basket = user.basket + f'{product_id}-{form.count.data} '
+                    else:
+                        bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+                        bask += ' '
+                        user.basket = bask
+                else:
+                    user.basket = f'{product_id}-{form.count.data} '
+                sessions.commit()
+            else:
+                return render_template('product.html', prod=prod, filename=filename,
+                                       title=prod.title,
+                                       form=form, message='Товара нет в наличии!')
+        else:
+            return render_template('product.html', prod=prod, filename=filename, title=prod.title,
+                                   form=form, message='Вы не авторизованы')
+    return render_template('product.html', prod=prod, filename=filename, title=prod.title,
+                           form=form)
+
+
+@app.route('/redact_prod_plus/<int:product_id>', methods=['GET', 'POST'])
+def redact_prod_plus(product_id):
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).get(current_user.id)
+    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
+            user.basket.strip().split()]
+    for item in bask:
+        if item[0] == product_id:
+            item[1] += 1
+    bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+    bask += ' '
+    user.basket = bask
+    sessions.commit()
+    return redirect('/basket')
+
+
+@app.route('/redact_prod_minus/<int:product_id>', methods=['GET', 'POST'])
+def redact_prod_minus(product_id):
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).get(current_user.id)
+    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
+            user.basket.strip().split()]
+    for item in bask:
+        if item[0] == product_id:
+            item[1] -= 1
+    bask = list(filter(lambda x: x[1] > 0, bask))
+    bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+    bask += ' '
+    user.basket = bask
+    sessions.commit()
+    return redirect('/basket')
+
+
+@app.route('/change/<string:pos>')
+def change(pos):
+    last_pos = session.get('sort', 'none')
+    if last_pos == pos:
+        session['reverse'] = not session.get('reverse', False)
+    else:
+        session['reverse'] = False
+    session['sort'] = pos
+    return redirect('/')
+
+
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField('Старый пароль', validators=[DataRequired()])
+    new_password = PasswordField('Новый пароль', validators=[DataRequired()])
+    again_password = PasswordField('Повторите новый пароль', validators=[DataRequired()])
+    submit = SubmitField('Сменить пароль')
+
+
+@app.route('/change_password', methods=['GET', "POST"])
+@login_required
+def change_password():
+    filename = get_profile_img()
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        db_session.global_init('db/blogs.sqlite')
+        session_in_db = db_session.create_session()
+        user = session_in_db.query(users.User).get(current_user.id)
+        if user.hashed_password != form.old_password.data:
+            return render_template('change_password.html', title='Регистрация',
+                                   form=form, old_password_error="Неверный пароль",
+                                   again_password_error="OK", new_password_error="OK",
+                                   filename=filename)
+        result = check_password(form.new_password.data)
+        if user.hashed_password == form.new_password.data:
+            return render_template('change_password.html', title='Регистрация',
+                                   form=form, old_password_error="OK", again_password_error="OK",
+                                   new_password_error="Новый пароль не должен совпадть со старым!",
+                                   filename=filename)
+        if result != 'OK':
+            return render_template('change_password.html', title='Регистрация',
+                                   form=form, old_password_error="OK", again_password_error="OK",
+                                   new_password_error=result, filename=filename)
+        if form.new_password.data != form.again_password.data:
+            return render_template('change_password.html', title='Регистрация',
+                                   form=form, old_password_error="OK", new_password_error="OK",
+                                   again_password_error="Пароли не совпадают!", filename=filename)
+        user.hashed_password = form.new_password.data
+        session_in_db.commit()
+        return redirect('/profile')
+    return render_template('change_password.html', form=form, title="Сменить пароль",
+                           filename=filename, old_password_error="OK", again_password_error="OK",
+                           new_password_error="OK")
+
+
 def main():
+    db_session.global_init("db/blogs.sqlite")
+    api.add_resource(product_resource.ProductListResource, '/api/v2/products')
+    api.add_resource(product_resource.ProductResource, '/api/v2/products/<int:product_id>')
     app.run()
 
 

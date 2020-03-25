@@ -2,7 +2,8 @@
 
 {%block content %}
 <form class="search" method="post">
-    <input class="form-control mr-sm-2" type="text" placeholder="Что вы хотите найти?" aria-label="Search"
+    <input class="form-control mr-sm-2" type="text" placeholder="Что вы хотите найти?"
+           aria-label="Search"
            name="search" value="{{ tag }}">
     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
 </form>
@@ -12,5 +13,45 @@
     {% else %}
     <h5>Возможно вам интересно:</h5>
     {% endif %}
+    <table align="center" style="margin-top: 20px; width: 100%;">
+        <tr>
+            <th width="400" class="alert alert-secondary" role="alert">
+                <div align="center">
+                    <a href="/change/none" class="base_href">Модель</a>
+                </div>
+            </th>
+            <th width="400" class="alert alert-secondary" role="alert">
+                <div align="center">
+                    <a href="/change/name" class="base_href">Наименование</a>{{ simn }}
+                </div>
+            </th>
+            <th width="400" class="alert alert-secondary" role="alert">
+                <div align="center">
+                    <a href="/change/count" class="base_href">Наличие</a>{{ simc }}
+                </div>
+            </th>
+            <th width="400" class="alert alert-secondary" role="alert">
+                <div align="center">
+                    <a href="/change/price" class="base_href">Цена</a>{{ simp }}
+                </div>
+            </th>
+        </tr>
+        {% for item in product %}
+        <tr>
+            <td width="200"><a href="/product/{{ item.id }}"><img
+                    src="/static/img/product_icons/{{ item.id }}.jpg" width="100"
+                    height="100" align="center"></a></td>
+            <td width="400"><h4 align="center"><a href="/product/{{ item.id }}" class="base_href">
+                {{ item.title }}</a></h4></td>
+            {% if item.existence == 1 %}
+            <td width="200"><h4 align="center">В наличии!</h4></td>
+            {% else %}
+            <td width="200"><h4 align="center">Нет в наличии!</h4></td>
+            {% endif %}
+            <td width="200"><h4 align="center">{{ item.price }}</h4></td>
+        </tr>
+        {% endfor %}
+    </table>
+
 </div>
 {% endblock %}

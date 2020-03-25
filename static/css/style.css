@@ -55,7 +55,7 @@
     padding: 30px;
 }
 
-.header {
+.header{
     opacity: 90%;
     width: 100%;
     z-index: 1000;
@@ -66,4 +66,16 @@
     right: 0;
 
     transform: translate3d(0, 0, 0);
+}
+
+.base_href{
+    text-decoration: none;
+    color: #000000;
+    font-size: 23px;
+    font-weight: 600;
+}
+
+.base_href:hover{
+    text-decoration: none;
+    color: #000000;
 }
