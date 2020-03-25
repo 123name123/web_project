@@ -51,7 +51,8 @@ def find_products(tag):
     ans_products = list()
     for item in all_products:
         title = item.title.lower()
-        if tag in title or title in tag or tag[:-1] in title or tag[:-2] in title:
+        if tag in title or title in tag or (len(tag) > 2 and tag[:-1] in title) or (
+                len(tag) > 2 and tag[:-2] in title):
             ans_products.append(item)
     return ans_products
 
