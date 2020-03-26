@@ -5,7 +5,7 @@ import os
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, NumberRange
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 # from flask_ngrok import run_with_ngrok
 import datetime
@@ -101,7 +101,8 @@ def index():
     elif pos == 'name':
         simn = sim
         all_product.sort(key=lambda x: x.title, reverse=session.get('reverse', False))
-    return render_template('index.html', title="CoolStore", tag=session.get('tag', ''),
+    return render_template('index.html', basket_count=session.get('basket_count', 0),
+                           title="CoolStore", tag=session.get('tag', ''),
                            filename=filename, product=all_product, simc=simc, simn=simn, simp=simp)
 
 
@@ -119,7 +120,8 @@ def login():
         return render_template('login_form.html',
                                message="Неправильный логин или пароль",
                                form=form)
-    return render_template('login_form.html', title='Авторизация', form=form, filename="profilem")
+    return render_template('login_form.html', basket_count=session.get('basket_count', 0),
+                           title='Авторизация', form=form, filename="profilem")
 
 
 @app.route('/logout')
@@ -195,17 +197,20 @@ def reqister():
     if form.validate_on_submit():
         result = check_password(form.password.data)
         if result != 'OK':
-            return render_template('reg.html', title='Регистрация',
+            return render_template('reg.html', basket_count=session.get('basket_count', 0),
+                                   title='Регистрация',
                                    form=form, email_error="OK", again_password_error="OK",
                                    password_error=result)
         if form.password.data != form.password_again.data:
-            return render_template('reg.html', title='Регистрация',
+            return render_template('reg.html', basket_count=session.get('basket_count', 0),
+                                   title='Регистрация',
                                    form=form, email_error="OK", password_error="OK",
                                    again_password_error="Пароли не совпадают")
         db_session.global_init('db/blogs.sqlite')
         session_in_db = db_session.create_session()
         if session_in_db.query(users.User).filter(users.User.email == form.email.data).first():
-            return render_template('reg.html', title='Регистрация',
+            return render_template('reg.html', basket_count=session.get('basket_count', 0),
+                                   title='Регистрация',
                                    form=form, password_error="OK", again_password_error="OK",
                                    email_error="Такой пользователь уже есть")
         if form.gender.data == '1':
@@ -224,7 +229,8 @@ def reqister():
         session_in_db.add(user)
         session_in_db.commit()
         return redirect('/login')
-    return render_template('reg.html', title='Регистрация', form=form, filename="profilem",
+    return render_template('reg.html', basket_count=session.get('basket_count', 0),
+                           title='Регистрация', form=form, filename="profilem",
                            email_error="OK", password_error="OK", again_password_error="OK")
 
 
@@ -241,7 +247,8 @@ def profile():
             'sname': current_user.surname,
             'mname': current_user.midname,
             'gender': current_user.gender,
-            'age': current_user.age
+            'age': current_user.age,
+            'basket_count': session.get('basket_count', 0)
         }
         return render_template('profile.html', **params)
     elif request.method == 'POST':
@@ -265,7 +272,9 @@ def basket():
     user = load_user(current_user.id)
     bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in user.basket.strip().split()]
     bask = list(map(lambda x: [sessions.query(products.Products).get(x[0]), x[1]], bask))
-    return render_template('basket.html', title='Корзина', filename=filename, bask=bask)
+    session['basket_count'] = len(bask)
+    return render_template('basket.html', basket_count=session.get('basket_count', 0),
+                           title='Корзина', filename=filename, bask=bask)
 
 
 @app.route('/delete/<int:product_id>', methods=['GET', 'POST'])
@@ -316,7 +325,8 @@ def redact_profile():
 
 
 class Buy(FlaskForm):
-    count = IntegerField('Колличество:', validators=[DataRequired()])
+    count = IntegerField('Колличество:', validators=[DataRequired(), NumberRange(1)],
+                         default=1)
     submit = SubmitField('В корзину')
 
 
@@ -356,9 +366,12 @@ def product(product_id):
                                        title=prod.title,
                                        form=form, message='Товара нет в наличии!')
         else:
-            return render_template('product.html', prod=prod, filename=filename, title=prod.title,
+            return render_template('product.html', prod=prod, filename=filename,
+                                   basket_count=session.get('basket_count', 0), title=prod.title,
                                    form=form, message='Вы не авторизованы')
-    return render_template('product.html', prod=prod, filename=filename, title=prod.title,
+        return redirect('/basket')
+    return render_template('product.html', prod=prod, filename=filename,
+                           basket_count=session.get('basket_count', 0), title=prod.title,
                            form=form)
 
 
@@ -423,28 +436,33 @@ def change_password():
         session_in_db = db_session.create_session()
         user = session_in_db.query(users.User).get(current_user.id)
         if user.hashed_password != form.old_password.data:
-            return render_template('change_password.html', title='Регистрация',
+            return render_template('change_password.html',
+                                   basket_count=session.get('basket_count', 0), title='Регистрация',
                                    form=form, old_password_error="Неверный пароль",
                                    again_password_error="OK", new_password_error="OK",
                                    filename=filename)
         result = check_password(form.new_password.data)
         if user.hashed_password == form.new_password.data:
-            return render_template('change_password.html', title='Регистрация',
+            return render_template('change_password.html',
+                                   basket_count=session.get('basket_count', 0), title='Регистрация',
                                    form=form, old_password_error="OK", again_password_error="OK",
                                    new_password_error="Новый пароль не должен совпадть со старым!",
                                    filename=filename)
         if result != 'OK':
-            return render_template('change_password.html', title='Регистрация',
+            return render_template('change_password.html',
+                                   basket_count=session.get('basket_count', 0), title='Регистрация',
                                    form=form, old_password_error="OK", again_password_error="OK",
                                    new_password_error=result, filename=filename)
         if form.new_password.data != form.again_password.data:
-            return render_template('change_password.html', title='Регистрация',
+            return render_template('change_password.html',
+                                   basket_count=session.get('basket_count', 0), title='Регистрация',
                                    form=form, old_password_error="OK", new_password_error="OK",
                                    again_password_error="Пароли не совпадают!", filename=filename)
         user.hashed_password = form.new_password.data
         session_in_db.commit()
         return redirect('/profile')
-    return render_template('change_password.html', form=form, title="Сменить пароль",
+    return render_template('change_password.html', form=form,
+                           basket_count=session.get('basket_count', 0), title="Сменить пароль",
                            filename=filename, old_password_error="OK", again_password_error="OK",
                            new_password_error="OK")
 

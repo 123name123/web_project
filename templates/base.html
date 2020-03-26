@@ -11,9 +11,9 @@
           crossorigin="anonymous">
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 
     <title> {{ title }} </title>
 </head>
@@ -22,21 +22,54 @@
     <nav class="navbar navbar-light bg-light">
         <a class="navbar-brand" href="/">CoolStore</a>
         {% if current_user.is_authenticated %}
-        <div>
-            <a class="navbar-brand" href="/basket"><img src="../../static/img/basket.png"
-                                                        class="icon"></a>
+        <div style="display: flex;">
+            <div style="display: flex; margin-right: 7px;">
+                <a class="navbar-brand" href="/basket"><img src="../../static/img/basket.png"
+                                                            class="icon"></a>
+                <div class="basket_num">{{ basket_count }}</div>
+            </div>
             <a class="navbar-brand" href="/profile">
                 <img src="../../static/img/profile_img/{{ filename }}.jpg" class="icon"></a>
         </div>
         {% else %}
         <div>
-            <a class="btn btn-outline-secondary" href="/register" >Зарегистрироваться</a>
+            <a class="btn btn-outline-secondary" href="/register">Зарегистрироваться</a>
             <a class="btn btn-outline-dark" href="/login">Войти</a>
         </div>
         {% endif %}
     </nav>
 </header>
 <h1 align="center" style="margin-top: 70px;">{{ title }}</h1>
-{% block content %} {% endblock %}
+
+<div class="scrollup">
+  <img src="../../static/img/to_top.png" class="icon" style="width: 50px; height: 40px;">
+</div>
+
+<script>
+$(function() {
+  // при нажатии на кнопку scrollup
+  $('.scrollup').click(function() {
+    // переместиться в верхнюю часть страницы
+    $("html, body").animate({
+      scrollTop:0
+    },1000);
+  })
+})
+// при прокрутке окна (window)
+$(window).scroll(function() {
+  // если пользователь прокрутил страницу более чем на 200px
+  if ($(this).scrollTop()>200) {
+    // то сделать кнопку scrollup видимой
+    $('.scrollup').fadeIn();
+  }
+  // иначе скрыть кнопку scrollup
+  else {
+    $('.scrollup').fadeOut();
+  }
+});
+</script>
+
+{% block content %}
+{% endblock %}
 </body>
 </html>
