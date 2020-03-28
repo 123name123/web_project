@@ -14,6 +14,8 @@ class Products(SqlAlchemyBase, UserMixin, SerializerMixin):
     about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     price = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     existence = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    still_have = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
 
     def __repr__(self):
-        return f"{self.id} {self.title} {self.about}, {self.price}, {self.existence}"
+        return f"{self.id} {self.title} {self.about}, {self.price}, {self.existence}, " \
+               f"{self.still_have}"

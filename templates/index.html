@@ -32,6 +32,11 @@
             </th>
             <th width="400" class="alert alert-secondary" role="alert">
                 <div align="center">
+                    <a href="/change/count" class="base_href">Осталось</a>{{ simc }}
+                </div>
+            </th>
+            <th width="400" class="alert alert-secondary" role="alert">
+                <div align="center">
                     <a href="/change/price" class="base_href">Цена</a>{{ simp }}
                 </div>
             </th>
@@ -48,6 +53,7 @@
             {% else %}
             <td width="200"><h4 align="center">Нет в наличии!</h4></td>
             {% endif %}
+            <td width="200"><h4 align="center">{{ item.still_have }}</h4></td>
             <td width="200"><h4 align="center">{{ item.price }}$</h4></td>
         </tr>
         {% endfor %}

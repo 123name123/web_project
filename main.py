@@ -48,8 +48,20 @@ def get_profile_img():
 def find_products(tag):
     sessions = db_session.create_session()
     all_products = sessions.query(products.Products).all()
+    for item in all_products:
+        if item.existence and item.still_have == 0:
+            item.existence = 0
+        elif not item.existence and item.still_have:
+            item.existence = 1
+    sessions.commit()
+    sessions = db_session.create_session()
+    all_products = sessions.query(products.Products).all()
     ans_products = list()
     for item in all_products:
+        if item.existence and item.still_have == 0:
+            item.existence = 0
+        elif not item.existence and item.still_have:
+            item.existence = 1
         title = item.title.lower()
         if tag in title or title in tag or (len(tag) > 2 and tag[:-1] in title) or (
                 len(tag) > 2 and tag[:-2] in title):
@@ -149,7 +161,7 @@ class LengthError(Exception):
 
 
 class SymbolError(Exception):
-    error = 'В пароле должна быть хотя бы один символ!'
+    error = 'В пароле должен быть хотя бы один символ!'
 
 
 class LetterError(Exception):
@@ -277,9 +289,11 @@ def basket():
                            title='Корзина', filename=filename, bask=bask)
 
 
-@app.route('/delete/<int:product_id>', methods=['GET', 'POST'])
-def delete(product_id):
+@app.route('/delete/<int:product_id>/<int:count>', methods=['GET', 'POST'])
+def delete(product_id, count):
     sessions = db_session.create_session()
+    prod = sessions.query(products.Products).get(product_id)
+    prod.still_have += count
     user = sessions.query(users.User).get(current_user.id)
     bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in user.basket.strip().split()]
     bask = list(filter(lambda x: x[0] != product_id, bask))
@@ -341,8 +355,11 @@ def product(product_id):
     prod = sessions.query(products.Products).get(product_id)
     if form.validate_on_submit():
         if current_user.is_authenticated:
-            if sessions.query(products.Products).get(product_id).existence:
-                sessions = db_session.create_session()
+            if sessions.query(products.Products).get(product_id).existence and\
+                    form.count.data <= prod.still_have:
+                prod.still_have -= form.count.data
+                if prod.still_have == 0:
+                    prod.existence = 0
                 user = sessions.query(users.User).get(current_user.id)
                 if user.basket:
                     bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
@@ -364,7 +381,8 @@ def product(product_id):
             else:
                 return render_template('product.html', prod=prod, filename=filename,
                                        title=prod.title,
-                                       form=form, message='Товара нет в наличии!')
+                                       form=form,
+                                       message='Товара в таком колличестве нет в наличии!')
         else:
             return render_template('product.html', prod=prod, filename=filename,
                                    basket_count=session.get('basket_count', 0), title=prod.title,
@@ -378,16 +396,19 @@ def product(product_id):
 @app.route('/redact_prod_plus/<int:product_id>', methods=['GET', 'POST'])
 def redact_prod_plus(product_id):
     sessions = db_session.create_session()
-    user = sessions.query(users.User).get(current_user.id)
-    bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
-            user.basket.strip().split()]
-    for item in bask:
-        if item[0] == product_id:
-            item[1] += 1
-    bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
-    bask += ' '
-    user.basket = bask
-    sessions.commit()
+    prod = sessions.query(products.Products).get(product_id)
+    if prod.still_have:
+        user = sessions.query(users.User).get(current_user.id)
+        bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
+                user.basket.strip().split()]
+        for item in bask:
+            if item[0] == product_id:
+                item[1] += 1
+        bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
+        bask += ' '
+        user.basket = bask
+        prod.still_have -= 1
+        sessions.commit()
     return redirect('/basket')
 
 
@@ -404,6 +425,8 @@ def redact_prod_minus(product_id):
     bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
     bask += ' '
     user.basket = bask
+    prod = sessions.query(products.Products).get(product_id)
+    prod.still_have += 1
     sessions.commit()
     return redirect('/basket')
 

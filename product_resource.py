@@ -10,7 +10,8 @@ class ProductResource(Resource):
         session = db_session.create_session()
         product = session.query(products.Products).get(product_id)
         return jsonify({
-            'product': product.to_dict(only=('id', 'title', 'price', 'existence', 'about'))
+            'product': product.to_dict(only=('id', 'title', 'price', 'existence', 'about',
+                                             'still_have'))
         })
 
     def delete(self, product_id):
@@ -34,7 +35,7 @@ class ProductListResource(Resource):
         session = db_session.create_session()
         product = session.query(products.Products).all()
         return jsonify({'products': [item.to_dict(only=('id', 'title', 'price', 'existence',
-                                                        'about'))
+                                                        'about', 'still_have'))
                                      for item in product]})
 
     def post(self):
@@ -44,7 +45,8 @@ class ProductListResource(Resource):
             title=args['title'],
             price=args['price'],
             about=args['about'],
-            existence=args['existence']
+            existence=args['existence'],
+            still_have=args['still_have']
         )
         session.add(product)
         session.commit()
