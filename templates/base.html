@@ -12,7 +12,8 @@
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js">
+    </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 
     <title> {{ title }} </title>
@@ -42,7 +43,7 @@
 <h1 align="center" style="margin-top: 70px;">{{ title }}</h1>
 
 <div class="scrollup">
-  <img src="../../static/img/to_top.png" class="icon" style="width: 50px; height: 40px;">
+    <img src="../../static/img/to_top.png" class="icon" style="width: 50px; height: 40px;">
 </div>
 
 <script>
@@ -67,6 +68,12 @@ $(window).scroll(function() {
     $('.scrollup').fadeOut();
   }
 });
+
+
+
+
+
+
 </script>
 
 {% block content %}

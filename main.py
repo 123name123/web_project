@@ -71,7 +71,7 @@ def find_products(tag):
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('404.html')
+    return render_template('404.html', error=error)
 
 
 @login_manager.user_loader
@@ -211,7 +211,7 @@ def check_password(password):
             raise LengthError
         bool_ys(password)
         return 'OK'
-    except Exception as ex:
+    except (LengthError, SymbolError, LetterError, DigitError) as ex:
         return ex.error
 
 
@@ -376,12 +376,12 @@ def product(product_id):
                 if user.basket:
                     bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
                             user.basket.strip().split()]
-                    change = False
+                    change_product = False
                     for item in bask:
                         if item[0] == product_id:
                             item[1] += form.count.data
-                            change = True
-                    if not change:
+                            change_product = True
+                    if not change_product:
                         user.basket = user.basket + f'{product_id}-{form.count.data} '
                     else:
                         bask = ' '.join(['-'.join([str(x[0]), str(x[1])]) for x in bask])
