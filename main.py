@@ -11,6 +11,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 import datetime
 from flask_restful import Api
 import product_resource
+from random import shuffle
 
 app = Flask(__name__)
 api = Api(app)
@@ -63,8 +64,7 @@ def find_products(tag):
         elif not item.existence and item.still_have:
             item.existence = 1
         title = item.title.lower()
-        if tag in title or title in tag or (len(tag) > 2 and tag[:-1] in title) or (
-                len(tag) > 2 and tag[:-2] in title):
+        if tag in title or title in tag:
             ans_products.append(item)
     return ans_products
 
@@ -102,20 +102,32 @@ def index():
         sim = '▲'
     else:
         sim = '▼'
-    simp = simc = simn = ''
+    simp = simc = simn = simnal = ''
     pos = session.get('sort', 'none')
     if pos == 'price':
         all_product.sort(key=lambda x: x.price, reverse=session.get('reverse', False))
         simp = sim
-    elif pos == 'count':
+    elif pos == 'nal':
         all_product.sort(key=lambda x: x.existence, reverse=session.get('reverse', False))
+        simnal = sim
+    elif pos == 'count':
+        all_product.sort(key=lambda x: x.still_have, reverse=session.get('reverse', False))
         simc = sim
     elif pos == 'name':
         simn = sim
         all_product.sort(key=lambda x: x.title, reverse=session.get('reverse', False))
+    else:
+        shuffle(all_product)
+    if session.get('basket_count', -1) == -1 and current_user.is_authenticated:
+        sessions = db_session.create_session()
+        user = load_user(current_user.id)
+        bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in user.basket.strip().split()]
+        bask = list(map(lambda x: [sessions.query(products.Products).get(x[0]), x[1]], bask))
+        session['basket_count'] = len(bask)
     return render_template('index.html', basket_count=session.get('basket_count', 0),
-                           title="CoolStore", tag=session.get('tag', ''),
-                           filename=filename, product=all_product, simc=simc, simn=simn, simp=simp)
+                           title="CoolStore", tag=session.get('tag', ''), size=len(all_product),
+                           filename=filename, product=all_product, simc=simc, simn=simn, simp=simp,
+                           simnal=simnal)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -335,7 +347,7 @@ def redact_profile():
         return redirect('/profile')
     filename = get_profile_img()
     return render_template('redact_profile.html', form=form, filename=filename,
-                           title='Редактирование')
+                           basket_count=session.get('basket_count', 0), title='Редактирование')
 
 
 class Buy(FlaskForm):
@@ -355,7 +367,7 @@ def product(product_id):
     prod = sessions.query(products.Products).get(product_id)
     if form.validate_on_submit():
         if current_user.is_authenticated:
-            if sessions.query(products.Products).get(product_id).existence and\
+            if sessions.query(products.Products).get(product_id).existence and \
                     form.count.data <= prod.still_have:
                 prod.still_have -= form.count.data
                 if prod.still_have == 0:
@@ -380,8 +392,8 @@ def product(product_id):
                 sessions.commit()
             else:
                 return render_template('product.html', prod=prod, filename=filename,
-                                       title=prod.title,
-                                       form=form,
+                                       title=prod.title, form=form,
+                                       basket_count=session.get('basket_count', 0),
                                        message='Товара в таком колличестве нет в наличии!')
         else:
             return render_template('product.html', prod=prod, filename=filename,
