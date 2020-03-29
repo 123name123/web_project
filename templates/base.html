@@ -20,30 +20,48 @@
 </head>
 <body>
 <header class="header">
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="/">CoolStore</a>
-        {% if current_user.is_authenticated %}
-        <div style="display: flex;">
-            <div style="display: flex; margin-right: 7px;">
-                <a class="navbar-brand" href="/basket"><img src="../../static/img/basket.png"
-                                                            class="icon"></a>
-                <div class="basket_num">{{ basket_count }}</div>
-            </div>
-            <a class="navbar-brand" href="/profile">
-                <img src="../../static/img/profile_img/{{ filename }}.jpg" class="icon"></a>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #9312a7;">
+        <a class="navbar-brand" href="/" style="font-size: 25px;">CoolStore</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li style="margin-left: 1175px;">
+                    <a class="navbar-brand" href="/basket" style="display: flex;"><img
+                            src="../../static/img/basket.png"
+                            class="icon">
+                        <div class="basket_num">{{ basket_count }}</div>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                       style="display: flex;">
+                        <div style="font-size: 18px; margin-right: 10px; margin-top: 5px;">{{
+                            current_user.name }}
+                        </div>
+                        <img src="../../static/img/profile_img/{{ filename }}.jpg" class="icon">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        {% if current_user.is_authenticated %}
+                        <a class="dropdown-item" href="/profile">Мой профиль</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/redact_profile">Редактировать профиль</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/change_password">Сменить пароль</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout">Выйти</a>
+                        {% else %}
+                        <a class="dropdown-item" href="/login">Войти</a>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
         </div>
-        {% else %}
-        <div>
-            <a class="btn btn-outline-secondary" href="/register">Зарегистрироваться</a>
-            <a class="btn btn-outline-dark" href="/login">Войти</a>
-        </div>
-        {% endif %}
     </nav>
 </header>
-<h1 align="center" style="margin-top: 70px;">{{ title }}</h1>
+<h1 align="center" style="margin-top: 90px;">{{ title }}</h1>
 
 <div class="scrollup">
-    <img src="../../static/img/to_top.png" class="icon" style="width: 50px; height: 40px;">
+    <img src="../../static/img/to_top.jpg" class="icon" style="width: 50px; height: 50px;">
 </div>
 
 <script>
@@ -68,11 +86,6 @@ $(window).scroll(function() {
     $('.scrollup').fadeOut();
   }
 });
-
-
-
-
-
 
 </script>
 

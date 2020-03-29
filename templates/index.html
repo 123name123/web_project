@@ -5,7 +5,7 @@
     <input class="form-control mr-sm-2" type="text" placeholder="Что вы хотите найти?"
            aria-label="Search"
            name="search" value="{{ tag }}">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+    <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Поиск</button>
 </form>
 <div class="main">
     {% if size != 0 %}
@@ -17,27 +17,27 @@
     <table align="center" style="margin-top: 20px; width: 100%;
     border-spacing: 0px 20px; border-collapse: separate;">
         <tr>
-            <th width="400" class="alert alert-secondary" role="alert">
+            <th width="400" class="table_h" role="alert">
                 <div align="center">
                     <a href="/change/none" class="base_href">Модель</a>
                 </div>
             </th>
-            <th width="400" class="alert alert-secondary" role="alert">
+            <th width="400" class="table_h" role="alert">
                 <div align="center">
                     <a href="/change/name" class="base_href">Наименование</a>{{ simn }}
                 </div>
             </th>
-            <th width="400" class="alert alert-secondary" role="alert">
+            <th width="400" class="table_h" role="alert">
                 <div align="center">
                     <a href="/change/nal" class="base_href">Наличие</a>{{ simnal }}
                 </div>
             </th>
-            <th width="400" class="alert alert-secondary" role="alert">
+            <th width="400" class="table_h" role="alert">
                 <div align="center">
                     <a href="/change/count" class="base_href">Осталось</a>{{ simc }}
                 </div>
             </th>
-            <th width="400" class="alert alert-secondary" role="alert">
+            <th width="400" class="table_h" role="alert">
                 <div align="center">
                     <a href="/change/price" class="base_href">Цена</a>{{ simp }}
                 </div>
