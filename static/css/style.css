@@ -3,8 +3,10 @@
     height: 40px;
     margin: 0px;
     padding: 0px;
-    border: 1px solid #9312a7;
-    border-radius: 25px;
+}
+
+img{
+    border-radius: 5px;
 }
 
 .not_found{
@@ -43,9 +45,8 @@
 }
 
 .main{
-    border: 1px solid #e3f2fd;
     border-radius: 15px;
-    background: #d5d1eb;
+    background: #95e1d3;
     position: absolute;
     margin-top: 100px;
     margin-left: 10%;
@@ -55,8 +56,8 @@
 }
 
 .header{
-    opacity: 90%;
     width: 100%;
+    opacity: .9;
     z-index: 1000;
 
     position: fixed;
@@ -76,12 +77,12 @@
 
 .base_href:hover{
     text-decoration: none;
-    color: #000000;
+    color: #ffffff;
 }
 .product {
-    border: 1px solid #e3f2fd;;
+    border: 1px solid #95e1d3;
     border-radius: 15px;
-    background: #f5f5f5;
+    background: #95e1d3;
     display: flex;
     margin-left: 10%;
     margin-right: 10%;
@@ -108,16 +109,91 @@ div.scrollup {
   bottom: 20px;
   padding: 4px 10px;
   font-size: 20px;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
   cursor: pointer;
   display: none;
   text-align: center;
 }
 
 .table_h{
-    background-color: #e3a3ff;
-    border: 1px solid #d470ff;
+    background: linear-gradient(to bottom, #f38181, #95e1d3);
+    border: 1px solid #95e1d3;
     height: 75px;
     border-radius: 5px;
+}
+
+.table_h:hover{
+    background: linear-gradient(to bottom, #fce38a, #95e1d3);
+}
+
+.table_h:hover .base_href{
+    color: #ffffff;
+}
+
+.dropbtn {
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    right: 0;
+    display: none;
+    position: absolute;
+    background-color: #f38181;
+    min-width: 210px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #fce38a; text-decoration: none; color: black;}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+
+.about__item {
+    width: 250px;
+    position: relative;
+    border-radius: 15px;
+    background-color: #95e1d3;
+}
+
+.about__item:hover .about__img {
+    transform: translate3d(-10px, -10px, 0);
+}
+
+.about__item:hover .about__img img {
+    opacity: .5;
+}
+
+.about__item:hover .about__text {
+    opacity: 1;
+}
+
+.about__img {
+    border-radius: 15px;
+    background: linear-gradient(to bottom, #f38181, #fce38a);
+
+    transition: transform .2s linear;
+}
+
+.about__img img {
+    display: block;
+    transition: opacity .1s linear;
 }

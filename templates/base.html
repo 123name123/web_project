@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Montserrat:400&display
+    =swap&subset=cyrillic-ext" rel="stylesheet">
     <link rel="stylesheet" href="../../static/css/style.css">
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -18,50 +19,52 @@
 
     <title> {{ title }} </title>
 </head>
-<body>
+<body style="font-family: 'Montserrat', sans-serif;">
 <header class="header">
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #9312a7;">
-        <a class="navbar-brand" href="/" style="font-size: 25px;">CoolStore</a>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #f38181;">
+        <a class="navbar-brand" href="/" style="font-size: 25px; color: white; font-family:
+        'Kaushan Script', cursive;">CoolStore</a>
+        {% if current_user.is_authenticated %}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li style="margin-left: 1175px;">
-                    <a class="navbar-brand" href="/basket" style="display: flex;"><img
-                            src="../../static/img/basket.png"
-                            class="icon">
-                        <div class="basket_num">{{ basket_count }}</div>
-                    </a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                       style="display: flex;">
-                        <div style="font-size: 18px; margin-right: 10px; margin-top: 5px;">{{
-                            current_user.name }}
-                        </div>
-                        <img src="../../static/img/profile_img/{{ filename }}.jpg" class="icon">
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        {% if current_user.is_authenticated %}
-                        <a class="dropdown-item" href="/profile">Мой профиль</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/redact_profile">Редактировать профиль</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/change_password">Сменить пароль</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout">Выйти</a>
-                        {% else %}
-                        <a class="dropdown-item" href="/login">Войти</a>
-                        {% endif %}
+            <div style="margin-left: 1150px;">
+                <a class="navbar-brand" href="/basket" style="display: flex;"><img
+                        src="../../static/img/new_basket.png"
+                        class="icon">
+                    <div class="basket_num">{{ basket_count }}</div>
+                </a>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn" style="display: flex;">
+                    <div style="font-size: 18px; margin-right: 10px; margin-top: 5px;">
+                        {{ current_user.name }}
                     </div>
-                </li>
-            </ul>
+                    <img src="../../static/img/profile_img/{{ filename }}.jpg" class="icon" style="border-radius: 25px;">
+                </button>
+                <div class="dropdown-content">
+                    <a href="/profile">Мой профиль</a>
+
+                    <a href="/redact_profile">Редактировать профиль</a>
+
+                    <a href="/change_password">Сменить пароль</a>
+
+                    <a href="/logout">Выйти</a>
+                </div>
+            </div>
         </div>
+        {% else %}
+        <div style="margin-left: 1100px; display: flex;">
+            <a class="btn btn-outline-dark" href="/register">Зарегистрироваться</a>
+            <a class="btn btn-outline-dark" href="/login" style="margin-left: 5px;">Войти</a>
+        </div>
+        {% endif %}
     </nav>
 </header>
-<h1 align="center" style="margin-top: 90px;">{{ title }}</h1>
+<h1 align="center" style="margin-top: 110px; font-family: 'Kaushan Script', cursive;">
+    {{ title }}
+</h1>
 
 <div class="scrollup">
-    <img src="../../static/img/to_top.jpg" class="icon" style="width: 50px; height: 50px;">
+    <img src="../../static/img/to_top.png" style="width: 50px; height: 50px;">
 </div>
 
 <script>
@@ -86,6 +89,13 @@ $(window).scroll(function() {
     $('.scrollup').fadeOut();
   }
 });
+
+
+
+
+
+
+
 
 </script>
 
