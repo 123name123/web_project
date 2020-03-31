@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {%block content %}
+
 <form class="search" method="post">
     <input class="form-control mr-sm-2" type="text" placeholder="Что вы хотите найти?"
            aria-label="Search"
@@ -68,5 +69,6 @@
     {% else %}
     <img src="/static/img/empty_search.jpeg" style="width: 100%">
     {% endif %}
+</div>
 </div>
 {% endblock %}

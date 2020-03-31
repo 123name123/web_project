@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+          crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Montserrat:400&display
     =swap&subset=cyrillic-ext" rel="stylesheet">
     <link rel="stylesheet" href="../../static/css/style.css">
@@ -16,7 +19,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js">
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet"
+          id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <title> {{ title }} </title>
 </head>
 <body style="font-family: 'Montserrat', sans-serif;">
@@ -38,7 +44,8 @@
                     <div style="font-size: 18px; margin-right: 10px; margin-top: 5px;">
                         {{ current_user.name }}
                     </div>
-                    <img src="../../static/img/profile_img/{{ filename }}.jpg" class="icon" style="border-radius: 25px;">
+                    <img src="../../static/img/profile_img/{{ filename }}.jpg" class="icon"
+                         style="border-radius: 25px;">
                 </button>
                 <div class="dropdown-content">
                     <a href="/profile">Мой профиль</a>
@@ -98,8 +105,67 @@ $(window).scroll(function() {
 
 
 </script>
-
 {% block content %}
 {% endblock %}
+
+<footer class="section footer-classic context-dark bg-image" style="background: #f38181;">
+        <div class="container">
+          <div class="row row-30">
+            <div class="col-md-4 col-xl-5">
+              <div class="pr-xl-4"><a class="brand" href="#">
+                  <img class="brand-logo-light" src="/static/img/icon.png" alt="Логотип" width="100"
+                       height="100"></a>
+                <p>Мы передовая компания по борьбе с коронавирусом.
+                    Вместе с вашими нескончаемыми деньгами поможем победить любую угрозу.</p>
+                <!-- Rights-->
+                <p class="rights"><span>©  </span><span class="copyright-year">2018</span><span> 
+                </span><span>Waves</span><span>. </span><span>All Rights Reserved.</span></p>
+              </div>
+            </div>
+            <div class="col-md-4" style="padding-top: 30px">
+              <h5>Контакты</h5>
+              <dl class="contact-list">
+                <dt>Адресс:</dt>
+                <dd><h4 style="display: flex" class="map__title">
+                    <div><i class="fas fa-map-marker-alt"></i></div>
+                    <a style="padding-left: 10px"
+                       href="https://clck.ru/MkGYr"
+                       target="_blank">Открыть карту</a>
+                </h4></dd>
+              </dl>
+              <dl class="contact-list">
+                <dt>почта:</dt>
+                <dd><a href="mailto:#">gusschool2@yandex.ru</a></dd>
+              </dl>
+              <dl class="contact-list">
+                <dt>телефоны:</dt>
+                <dd><a href="tel:#">+7-904-036-51-57</a> <span>or</span>
+                    <a href="tel:#">+7-900-475-30-74</a>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-md-4 col-xl-3" style="padding-top: 30px">
+              <h5>Ссылки</h5>
+              <ul class="nav-list">
+                <li><a href="#">О нас</a></li>
+                <li><a href="#">Проекты</a></li>
+                <li><a href="#">Блог</a></li>
+                <li><a href="#">Контакты</a></li>
+                <li><a href="#">Расценки</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="row no-gutters social-container">
+          <div class="col"><a class="social-inner" href="#"><span
+                  class="icon mdi mdi-facebook"></span><span>Facebook</span></a></div>
+          <div class="col"><a class="social-inner" href="#"><span
+                  class="icon mdi mdi-instagram"></span><span>instagram</span></a></div>
+          <div class="col"><a class="social-inner" href="#"><span
+                  class="icon mdi mdi-twitter"></span><span>twitter</span></a></div>
+          <div class="col"><a class="social-inner" href="#"><span
+                  class="icon mdi mdi-youtube-play"></span><span>google</span></a></div>
+        </div>
+      </footer>
 </body>
 </html>
