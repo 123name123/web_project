@@ -122,6 +122,7 @@ div.scrollup {
 
 .table_h:hover{
     background: linear-gradient(to bottom, #fce38a, #95e1d3);
+    color: #ffffff;
 }
 
 .table_h:hover .base_href{
@@ -245,4 +246,16 @@ ul, ol {
     opacity: 0;
     visibility: hidden;
     transition: .22s ease;
+}
+
+.footer_href{
+    color: #ffffff;
+    font-size: 15px;
+    decoration: none;
+}
+
+.footer_href:hover{
+    decoration: none;
+    color: #ffffff;
+    font-size: 17px;
 }

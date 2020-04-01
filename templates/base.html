@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="/static/img/new_icon.png">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
           crossorigin="anonymous">
@@ -21,21 +22,25 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet"
           id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <title> {{ title }} </title>
 </head>
 <body style="font-family: 'Montserrat', sans-serif;">
 <header class="header">
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #f38181;">
         <a class="navbar-brand" href="/" style="font-size: 25px; color: white; font-family:
-        'Kaushan Script', cursive;">CoolStore</a>
+        'Kaushan Script', cursive; display: flex;">
+            <img class="brand-logo-light" src="/static/img/new_icon.png"
+                 alt="Логотип" width="30" height="30" style="margin: 5px;">
+            <div>CoolStore</div>
+        </a>
         {% if current_user.is_authenticated %}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <div style="margin-left: 1150px;">
+            <div style="margin-left: 1110px;">
                 <a class="navbar-brand" href="/basket" style="display: flex;"><img
                         src="../../static/img/new_basket.png"
-                        class="icon">
+                        class="icon" style="border-radius: 0px;">
                     <div class="basket_num">{{ basket_count }}</div>
                 </a>
             </div>
@@ -59,7 +64,7 @@
             </div>
         </div>
         {% else %}
-        <div style="margin-left: 1100px; display: flex;">
+        <div style="margin-left: 1060px; display: flex;">
             <a class="btn btn-outline-dark" href="/register">Зарегистрироваться</a>
             <a class="btn btn-outline-dark" href="/login" style="margin-left: 5px;">Войти</a>
         </div>
@@ -104,68 +109,82 @@ $(window).scroll(function() {
 
 
 
+
+
+
+
+
 </script>
 {% block content %}
 {% endblock %}
 
-<footer class="section footer-classic context-dark bg-image" style="background: #f38181;">
-        <div class="container">
-          <div class="row row-30">
+<footer class="section footer-classic context-dark bg-image"
+        style="background: #f38181; margin-top: 50px;">
+    <div class="container">
+        <div class="row row-30">
             <div class="col-md-4 col-xl-5">
-              <div class="pr-xl-4"><a class="brand" href="#">
-                  <img class="brand-logo-light" src="/static/img/icon.png" alt="Логотип" width="100"
-                       height="100"></a>
-                <p>Мы передовая компания по борьбе с коронавирусом.
-                    Вместе с вашими нескончаемыми деньгами поможем победить любую угрозу.</p>
-                <!-- Rights-->
-                <p class="rights"><span>©  </span><span class="copyright-year">2018</span><span> 
-                </span><span>Waves</span><span>. </span><span>All Rights Reserved.</span></p>
-              </div>
+                <div class="pr-xl-4"><a class="brand" href="#">
+                    <img class="brand-logo-light" src="/static/img/new_icon.png" alt="Логотип"
+                         width="100" height="100" style="margin: 5px;"></a>
+                    <p>Мы передовая компания по борьбе с коронавирусом.
+                        Вместе с вашими нескончаемыми деньгами поможем победить любую угрозу.</p>
+                    <!-- Rights-->
+                    <p class="rights"><span>©  </span><span class="copyright-year">2020</span><span> 
+                </span><span>All Rights Reserved.</span></p>
+                </div>
             </div>
             <div class="col-md-4" style="padding-top: 30px">
-              <h5>Контакты</h5>
-              <dl class="contact-list">
-                <dt>Адресс:</dt>
-                <dd><h4 style="display: flex" class="map__title">
-                    <div><i class="fas fa-map-marker-alt"></i></div>
-                    <a style="padding-left: 10px"
-                       href="https://clck.ru/MkGYr"
-                       target="_blank">Открыть карту</a>
-                </h4></dd>
-              </dl>
-              <dl class="contact-list">
-                <dt>почта:</dt>
-                <dd><a href="mailto:#">gusschool2@yandex.ru</a></dd>
-              </dl>
-              <dl class="contact-list">
-                <dt>телефоны:</dt>
-                <dd><a href="tel:#">+7-904-036-51-57</a> <span>or</span>
-                    <a href="tel:#">+7-900-475-30-74</a>
-                </dd>
-              </dl>
+                <h5>Контакты</h5>
+                <dl class="contact-list">
+                    <dt>Адресс:</dt>
+                    <dd>
+                        <h4 style="display: flex" class="map__title">
+                            <div><i class="fas fa-map-marker-alt"></i></div>
+                            <a style="padding-left: 10px"
+                               href="https://clck.ru/MkGYr"
+                               target="_blank">Открыть карту</a>
+                        </h4>
+                    </dd>
+                </dl>
+                <dl class="contact-list">
+                    <dt>почта:</dt>
+                    <dd><a href="mailto:#">gusschool2@yandex.ru</a></dd>
+                </dl>
+                <dl class="contact-list">
+                    <dt>телефоны:</dt>
+                    <dd><a href="tel:#">+7-904-036-51-57</a> <span>или</span>
+                        <a href="tel:#">+7-900-475-30-74</a>
+                    </dd>
+                </dl>
             </div>
             <div class="col-md-4 col-xl-3" style="padding-top: 30px">
-              <h5>Ссылки</h5>
-              <ul class="nav-list">
-                <li><a href="#">О нас</a></li>
-                <li><a href="#">Проекты</a></li>
-                <li><a href="#">Блог</a></li>
-                <li><a href="#">Контакты</a></li>
-                <li><a href="#">Расценки</a></li>
-              </ul>
+                <h5>Ссылки</h5>
+                <ul class="nav-list">
+                    <li><a class="footer_href" href="#">О нас</a></li>
+                    <li><a class="footer_href" href="#">Проекты</a></li>
+                    <li><a class="footer_href" href="#">Блог</a></li>
+                    <li><a class="footer_href" href="#">Контакты</a></li>
+                    <li><a class="footer_href" href="#">Расценки</a></li>
+                </ul>
             </div>
-          </div>
         </div>
-        <div class="row no-gutters social-container">
-          <div class="col"><a class="social-inner" href="#"><span
-                  class="icon mdi mdi-facebook"></span><span>Facebook</span></a></div>
-          <div class="col"><a class="social-inner" href="#"><span
-                  class="icon mdi mdi-instagram"></span><span>instagram</span></a></div>
-          <div class="col"><a class="social-inner" href="#"><span
-                  class="icon mdi mdi-twitter"></span><span>twitter</span></a></div>
-          <div class="col"><a class="social-inner" href="#"><span
-                  class="icon mdi mdi-youtube-play"></span><span>google</span></a></div>
-        </div>
-      </footer>
+    </div>
+    <div class="row no-gutters social-container">
+        <div class="col"><a class="social-inner" href="https:\www.facebook.com"
+                            style="padding-bottom: 50px;" target="_blank"><span
+                class="icon mdi mdi-facebook"></span><span style="font-size: 22px;"><i
+                class="fab fa-facebook-f"></i>  Facebook</span></a></div>
+        <div class="col"><a class="social-inner" href="https:\www.instagram.com"
+                            target="_blank"><span
+                class="icon mdi mdi-instagram"></span><span style="font-size: 22px;"><i
+                class="fab fa-instagram"></i>  instagram</span></a></div>
+        <div class="col"><a class="social-inner" href="https:\twitter.com" target="_blank"><span
+                class="icon mdi mdi-twitter"></span><span style="font-size: 22px;"><i
+                class="fab fa-twitter"></i>  twitter</span></a></div>
+        <div class="col"><a class="social-inner" href="https:\www.google.com" target="_blank"><span
+                class="icon mdi mdi-youtube-play"></span><span style="font-size: 22px;"><i
+                class="fab fa-google-plus-g"></i>  google</span></a></div>
+    </div>
+</footer>
 </body>
 </html>

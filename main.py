@@ -118,12 +118,6 @@ def index():
         all_product.sort(key=lambda x: x.title, reverse=session.get('reverse', False))
     else:
         shuffle(all_product)
-    if session.get('basket_count', -1) == -1 and current_user.is_authenticated:
-        sessions = db_session.create_session()
-        user = load_user(current_user.id)
-        bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in user.basket.strip().split()]
-        bask = list(map(lambda x: [sessions.query(products.Products).get(x[0]), x[1]], bask))
-        session['basket_count'] = len(bask)
     return render_template('index.html', basket_count=session.get('basket_count', 0),
                            title="CoolStore", tag=session.get('tag', ''), size=len(all_product),
                            filename=filename, product=all_product, simc=simc, simn=simn, simp=simp,
@@ -140,6 +134,11 @@ def login():
         user = session_in_db.query(users.User).filter(users.User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
+            bask = [[int(x.split('-')[0]), int(x.split('-')[1])] for x in
+                    user.basket.strip().split()]
+            bask = list(
+                map(lambda x: [session_in_db.query(products.Products).get(x[0]), x[1]], bask))
+            session['basket_count'] = len(bask)
             return redirect("/")
         return render_template('login_form.html',
                                message="Неправильный логин или пароль",
