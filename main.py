@@ -7,7 +7,6 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Selec
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, NumberRange
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-# from flask_ngrok import run_with_ngrok
 import datetime
 from flask_restful import Api
 import product_resource
@@ -16,7 +15,6 @@ from random import shuffle
 app = Flask(__name__)
 api = Api(app)
 app.debug = True
-# run_with_ngrok(app)
 
 UPLOAD_FOLDER = f'{os.getcwd()}\\static\\img\\profile_img'
 
