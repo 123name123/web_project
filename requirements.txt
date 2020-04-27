@@ -4,3 +4,4 @@ Flask~=1.1.1
 WTForms~=2.2.1
 flask_login
 flask_restful
+sqlalchemy_serializer
