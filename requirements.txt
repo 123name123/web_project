@@ -5,3 +5,5 @@ WTForms~=2.2.1
 flask_login
 flask_restful
 sqlalchemy_serializer
+flask_wtf
+wtforms
